@@ -1,35 +1,32 @@
-import React, { Component } from 'react';
-import {FeedbackOptions} from './FeedbackOptions/FeedbackOptions';
+import React from 'react';
+import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
 import { Statistics } from './Statistics/Statistics';
 import { Notification } from './Notification/Notification';
 import { scoreKeys } from 'constants/scoreKeys';
 import { Section } from './Section/Section';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-export class App extends Component {
-  state = {
-    positive: 0,
-    neutral: 0,
-    negative: 0,
-    total: 0,
+export const App = () => {
+  const [positive, setPositive] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [negative, setNegative] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  const onLeaveFeedback = event => {
+    if (event.target.textContent === 'Positive') {
+      setPositive(positive + 1);
+    }
+    if (event.target.textContent === 'Negative') {
+      setNegative(negative + 1);
+    }
+    if (event.target.textContent === 'Neutral') {
+      setNeutral(neutral + 1);
+    }
+    setTotal(total + 1);
   };
 
-  onLeaveFeedback = e => {
-    if (e.target.textContent === 'Positive') {
-      this.setState({ positive: this.state.positive + 1 });
-    }
-    if (e.target.textContent === 'Negative') {
-      this.setState({ negative: this.state.negative + 1 });
-    }
-    if (e.target.textContent === 'Neutral') {
-      this.setState({ neutral: this.state.neutral + 1 });
-    }
-
-    this.setState({ total: this.state.total + 1 });
-  };
-
-  countPositiveFeedbackPercentage = () => {
-    const { positive, total } = this.state;
+  const countPositiveFeedbackPercentage = () => {
     const value = Math.round((positive / total) * 100);
     if (positive === 0) {
       return '-';
@@ -38,35 +35,31 @@ export class App extends Component {
     }
   };
 
-  render() {
-    const { positive, negative, neutral, total } = this.state;
-    return (
-      <div className="App">
-        <Section title="Espresso Coffee">
-          <FeedbackOptions
+  return (
+    <div className="App">
+      <Section title="Espresso Coffee">
+        <FeedbackOptions
+          scoreKeys={scoreKeys}
+          onLeaveFeedback={onLeaveFeedback}
+        />
+      </Section>
+      <Section title="Stats">
+        {total === 0 ? (
+          <Notification message="There is no feedback" />
+        ) : (
+          <Statistics
             scoreKeys={scoreKeys}
-            onLeaveFeedback={this.onLeaveFeedback}
+            positive={positive}
+            negative={negative}
+            neutral={neutral}
+            total={total}
+            positiveFeedback={countPositiveFeedbackPercentage()}
           />
-        </Section>
-        <Section title="Stats">
-          {this.state.total === 0 ? (
-            <Notification message="There is no feedback" />
-          ) : (
-            <Statistics
-              scoreKeys={scoreKeys}
-              positive={positive}
-              negative={negative}
-              neutral={neutral}
-              total={total}
-              positiveFeedback={this.countPositiveFeedbackPercentage()}
-            
-            />
-          )}
-        </Section>
-      </div>
-    );
-  }
-}
+        )}
+      </Section>
+    </div>
+  );
+};
 
 App.propTypes = {
   positive: PropTypes.number,
