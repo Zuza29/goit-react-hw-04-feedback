@@ -1,0 +1,14 @@
+h2 {
+    font-size: 2em;
+}
+
+.stats {
+    display: flex;
+flex-direction: column;
+}
+
+.stats p {
+        margin: 0;
+    line-height: 45px;
+    font-family: 'Open Sans', cursive;
+}
